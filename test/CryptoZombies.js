@@ -47,7 +47,7 @@ contract("CryptoZombies", (accounts) => {
     })
 
 
-    xcontext("with the single-step transfer scenario", async () => {
+    context("with the single-step transfer scenario", async () => {
       it("should transfer a zombie", async () => {
         // Create a new zombie for Alice (Remember that a zombie is nothing more than an ERC721 token).
           // The first line of the function should call createRandomZombie. Give it zombieNames[0] as the name and make sure Alice is the owner
@@ -67,12 +67,25 @@ contract("CryptoZombies", (accounts) => {
       })
     })
 
-    xcontext("with the two-step transfer scenario", async () => {
+       
+    context("with the two-step transfer scenario", async () => {
+      // Test the two-step scenario.  The approved address calls transferFrom
+        // Alice approves Bob to take the ERC721 token, then Bob (the approved address) calls transferFrom
       it("should approve and then transfer a zombie when the approved address calls transferFrom", async () => {
-        // TODO: Test the two-step scenario.  The approved address calls transferFrom
+      // This test is similar to single-step transfer so we copy the majority of the code...
+      const result = await contractInstance.createRandomZombie(zombieNames[0], {from: alice});
+      const zombieId = result.logs[0].args.zombieId.toNumber();
+      await contractInstance.approve(bob, zombieId, {from: alice});
+      await contractInstance.transferFrom(alice, bob, zombieId, {from: bob});
+      const newOwner = await contractInstance.ownerOf(zombieId);
+      assert.equal(newOwner,bob);
+
       })
-      it("should approve and then transfer a zombie when the owner calls transferFrom", async () => {
-          // TODO: Test the two-step scenario.  The owner calls transferFrom
+
+      // Test the two-step scenario.  The owner calls transferFrom
+        // Alice approves Bob to take the ERC721 token. Next, Alice transfers the ERC721 token
+      xit("should approve and then transfer a zombie when the owner calls transferFrom", async () => {
+          
        })
     })
 
